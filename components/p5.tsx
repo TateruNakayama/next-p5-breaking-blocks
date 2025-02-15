@@ -125,13 +125,21 @@ const P5Component = () => {
             p5.fill(255);
             p5.textSize(32);
             p5.textAlign(p5.CENTER, p5.CENTER);
-            p5.text("!!Clear!!", p5.width / 2, p5.height / 2);
+            p5.text("aaClear!!", p5.width / 2, p5.height / 2);
+        }
+    };
+
+    const keyPressed = (p5: p5Types) => {
+        if (p5.key === 'o') {
+            bricks = [];
+            gameCleared = true;
+            p5.noLoop();
         }
     };
 
     return (
         <div>
-            <Sketch setup={setup} draw={draw} windowResized={windowResized} />
+            <Sketch setup={setup} draw={draw} windowResized={windowResized} keyPressed={keyPressed} />
             <button onClick={() => p5Ref.current && resetGame(p5Ref.current)}>Restart</button>
         </div>
     );
