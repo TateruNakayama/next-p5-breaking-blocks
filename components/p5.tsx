@@ -26,10 +26,16 @@ const P5Component = () => {
     ];
 
     const p5Ref = useRef<p5Types | null>(null);
+    let gameCleared = false;
 
     const setup = (p5: p5Types, canvasParentRef: Element) => {
         p5Ref.current = p5;
-        p5.createCanvas(p5.windowWidth, p5.windowHeight).parent(canvasParentRef);
+        p5.createCanvas(p5.windowWidth, p5.windowHeight - 50).parent(canvasParentRef);
+        resetGame(p5);
+    };
+
+    const windowResized = (p5: p5Types) => {
+        p5.resizeCanvas(p5.windowWidth, p5.windowHeight);
         resetGame(p5);
     };
 
@@ -38,6 +44,7 @@ const P5Component = () => {
         ball = p5.createVector(p5.width / 2, p5.height / 2);
         ballSpeed = p5.createVector(10, -10);
         bricks = [];
+        gameCleared = false;
 
         const brickCols = Math.floor(p5.width / (brickWidth + 10)); // キャンバスの幅に合わせて列数を計算
 
@@ -82,6 +89,7 @@ const P5Component = () => {
         // Ball collision with paddle
         if (ball.y > paddle.y - ballRadius && ball.x > paddle.x && ball.x < paddle.x + paddleWidth) {
             ballSpeed.y *= -1;
+            ballSpeed.x += p5.random(-1, 1); // Add random element to ball's x speed
         }
 
         // Ball collision with bricks
@@ -91,8 +99,15 @@ const P5Component = () => {
                 ball.y + ballRadius > brick.position.y && ball.y - ballRadius < brick.position.y + brickHeight) {
                 bricks.splice(i, 1);
                 ballSpeed.y *= -1;
+                ballSpeed.x += p5.random(-1, 1); // Add random element to ball's x speed
                 break;
             }
+        }
+
+        // Check if all bricks are cleared
+        if (bricks.length === 0) {
+            gameCleared = true;
+            p5.noLoop();
         }
 
         // Ball out of bounds
@@ -104,11 +119,19 @@ const P5Component = () => {
         if (p5.mouseX > 0 && p5.mouseX < p5.width) {
             paddle.x = p5.mouseX - paddleWidth / 2;
         }
+
+        // Display "Clear" message if game is cleared
+        if (gameCleared) {
+            p5.fill(255);
+            p5.textSize(32);
+            p5.textAlign(p5.CENTER, p5.CENTER);
+            p5.text("!!Clear!!", p5.width / 2, p5.height / 2);
+        }
     };
 
     return (
         <div>
-            <Sketch setup={setup} draw={draw} />
+            <Sketch setup={setup} draw={draw} windowResized={windowResized} />
             <button onClick={() => p5Ref.current && resetGame(p5Ref.current)}>Restart</button>
         </div>
     );
