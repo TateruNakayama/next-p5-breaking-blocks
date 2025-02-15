@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ブロック崩し",
-  description: "ブロック崩しするWebゲームです",
+  title: "挙動のおかしいブロック崩し",
+  description: "挙動のおかしいブロック崩しをするWebゲームです",
 };
 
 export default function RootLayout({
